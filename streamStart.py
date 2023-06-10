@@ -26,5 +26,5 @@ raspivid_process = subprocess.Popen([
     "-f", "flv", f"rtmp://a.rtmp.youtube.com/live2/{STREAM_KEY}"
 ])
 
-print(raspivid_process)
+
 
