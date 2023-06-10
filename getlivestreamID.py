@@ -1,43 +1,38 @@
 import os
-
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
-import secrets
 
 scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
-def main():
-    # Disable OAuthlib's HTTPS verification when running locally.
-    # *DO NOT* leave this option enabled in production.
+def get_live_chat_id():
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-
     api_service_name = "youtube"
     api_version = "v3"
     client_secrets_file = "clientYoutube.json"
 
-    # Get credentials and create an API client
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
         client_secrets_file, scopes)
     credentials = flow.run_console()
+
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, credentials=credentials)
-    print(secrets.stream_id)
-    request = youtube.liveChatMessages().insert(
+
+    # Request the live broadcasts associated with your channel
+    request = youtube.liveBroadcasts().list(
         part="snippet",
-        body={
-          "snippet": {
-            "liveChatId": "ID REQUIRED",
-            "type": "textMessageEvent",
-            "textMessageDetails": {
-              "messageText": "API test for future automation 2"
-            }
-          }
-        }
+        mine=True
     )
     response = request.execute()
 
-    print(response)
+    # Extract the live chat ID from the first live broadcast
+    if "items" in response:
+        live_broadcast = response["items"][0]
+        live_chat_id = live_broadcast["snippet"]["liveChatId"]
+        return live_chat_id
 
-if __name__ == "__main__":
-    main()
+    return None
+
+# Call the function to get the live chat ID
+live_chat_id = get_live_chat_id()
+print(f"Live Chat ID: {live_chat_id}")
