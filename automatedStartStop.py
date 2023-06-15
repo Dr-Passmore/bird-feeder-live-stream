@@ -2,8 +2,9 @@
 
 import datetime
 import configparser
-from astral import Astral
-
+from astral import LocationInfo
+from astral.sun import sun
+import pytz
 
 
 currentDate = datetime.date.today()
@@ -33,3 +34,16 @@ date = config_file.get('YouTube LiveStream', 'date')
 
 
 print (date)
+date = datetime.date(2023, 4, 22)
+city = LocationInfo("Falmouth", "England", "Europe/London", 50.15, -5.066)
+timezone = pytz.timezone(city.timezone)
+s = sun(city.observer)
+
+
+print(
+    f'Dawn:    {s["dawn"].astimezone(timezone)}\n'
+    f'Sunrise: {s["sunrise"].astimezone(timezone)}\n'
+    f'Noon:    {s["noon"].astimezone(timezone)}\n'
+    f'Sunset:  {s["sunset"].astimezone(timezone)}\n'
+    f'Dusk:    {s["dusk"].astimezone(timezone)}\n'
+)
